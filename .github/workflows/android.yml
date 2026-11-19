@@ -20,23 +20,18 @@ jobs:
       - name: Install build tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y cmake g++ make
-          cmake --version
+          sudo apt-get install -y g++
           g++ --version
-
-      - name: Configure CMake
-        run: |
-          rm -rf build
-          cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
-          echo "CMake configure complete"
 
       - name: Build native binary
         run: |
-          cmake --build build --target hellms -j4
-          echo "Build complete"
-
-      - name: Verify binary
-        run: |
+          # Get all C++ source files
+          CXX_FILES=$(find . -name '*.cpp' -not -path './.git/*' -not -path './build/*')
+          
+          # Compile all source files
+          g++ -std=c++20 $CXX_FILES -o build/hellms -I.
+          
+          # Verify binary
           ls -la build/hellms
           ./build/hellms
 
