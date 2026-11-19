@@ -11,26 +11,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up JDK
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '17'
-
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-        with:
-          api-level: 33
-          target: android-33
-          ndk-version: '25.2.9520075'
-
-      - name: Install build tools
+      - name: Install Java and Android SDK
         run: |
-          sdkmanager --install "build-tools;33.0.0" "platform-tools" "platforms;android-33"
-          echo "SDK ready"
+          sudo apt-get update
+          sudo apt-get install -y openjdk-17-jdk-headless unzip
+          wget -q https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip -O /tmp/sdk-tools.zip
+          mkdir -p /opt/android-sdk/cmdline-tools
+          unzip -q /tmp/sdk-tools.zip -d /opt/android-sdk/cmdline-tools
+          mv /opt/android-sdk/cmdline-tools/cmdline-tools /opt/android-sdk/cmdline-tools/latest
+          echo 'export ANDROID_SDK_ROOT=/opt/android-sdk' >> $GITHUB_ENV
+          echo 'export PATH=$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools:$PATH' >> $GITHUB_ENV
+          yes | /opt/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=/opt/android-sdk --licenses 2>&1 || true
+          /opt/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=/opt/android-sdk "platform-tools" "platforms;android-33" "build-tools;33.0.0"
 
       - name: Install OpenGL dev packages
-        run: sudo apt-get update && sudo apt-get install -y cmake g++ make libgl1-mesa-dev libglx-dev
+        run: sudo apt-get install -y cmake g++ make libgl1-mesa-dev libglx-dev
 
       - name: Configure CMake
         run: cmake -B build -S . -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_BUILD_TYPE=Release
@@ -43,7 +38,9 @@ jobs:
 
       - name: Build APK with Gradle
         working-directory: android
-        run: ./gradlew assembleDebug -Pandroid.gradle.parallel=false
+        env:
+          ANDROID_SDK_ROOT: /opt/android-sdk
+        run: ./gradlew assembleDebug
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
