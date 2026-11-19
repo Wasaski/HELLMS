@@ -36,21 +36,19 @@ jobs:
       - name: Copy binary to Android project
         run: mkdir -p android/app/src/main/jniLibs/armeabi-v7a && cp build/hellms android/app/src/main/jniLibs/armeabi-v7a/hellms
 
-      - name: Generate Gradle wrapper
-        working-directory: android
-        env:
-          ANDROID_SDK_ROOT: /opt/android-sdk
+      - name: Install Gradle 8.0.2
         run: |
-          curl -sSL https://services.gradle.org/distributions/gradle-8.0.2-bin.zip -o /tmp/gradle.zip
+          wget -q https://services.gradle.org/distributions/gradle-8.0.2-bin.zip -o /tmp/gradle.zip
           unzip -q /tmp/gradle.zip -d /opt
           echo 'export PATH=/opt/gradle-8.0.2/bin:$PATH' >> $GITHUB_ENV
-          gradle wrapper --gradle-version 8.0.2
+          gradle --version
 
       - name: Build APK with Gradle
         working-directory: android
         env:
           ANDROID_SDK_ROOT: /opt/android-sdk
-        run: ./gradlew assembleDebug
+          JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
+        run: gradle assembleDebug
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
