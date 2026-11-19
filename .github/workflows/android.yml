@@ -32,15 +32,20 @@ jobs:
       - name: Accept Android licenses
         run: |
           # Accept licenses silently
-          $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses 2>/dev/null || true
-          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
+          mkdir -p $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/ 2>/dev/null || true
+          echo "y" | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses 2>/dev/null || true
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
+      - name: Make gradlew executable
+        run: |
+          if [ -f gradlew ]; then
+            chmod +x gradlew
+          else
+            ls -la
+          fi
 
       - name: Build with Gradle
         run: |
-          ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT ./gradlew assembleDebug --no-daemon
+          ./gradlew assembleDebug --no-daemon
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
