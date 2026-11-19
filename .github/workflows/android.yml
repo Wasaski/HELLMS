@@ -20,18 +20,23 @@ jobs:
       - name: Install build tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y g++
+          sudo apt-get install -y cmake g++ make
+          cmake --version
           g++ --version
+
+      - name: Configure CMake
+        run: |
+          rm -rf build
+          cmake -B build -S . -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_BUILD_TYPE=Release
+          echo "CMake configure complete"
 
       - name: Build native binary
         run: |
-          # Get all C++ source files
-          CXX_FILES=$(find . -name '*.cpp' -not -path './.git/*' -not -path './build/*')
-          
-          # Compile all source files
-          g++ -std=c++20 $CXX_FILES -o build/hellms -I.
-          
-          # Verify binary
+          cmake --build build --target hellms -j4
+          echo "Build complete"
+
+      - name: Verify binary
+        run: |
           ls -la build/hellms
           ./build/hellms
 
@@ -39,4 +44,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: hellms-binary
-          path: /HELLMS/build/hellms
+          path: build/hellms
