@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">HELLMS</string>
+    <string name="alpha_version">Alpha 0.1</string>
 </resources>

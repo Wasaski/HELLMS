@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- HELLMS launcher icon (vector version of assets/icons/logo.svg) -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="512"
+    android:viewportHeight="512">
+
+    <!-- Rounded background -->
+    <path
+        android:fillColor="#141017"
+        android:pathData="M128,16 L384,16 A112,112 0 0 1 496,128 L496,384 A112,112 0 0 1 384,496 L128,496 A112,112 0 0 1 16,384 L16,128 A112,112 0 0 1 128,16 Z" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M128,16 L384,16 A112,112 0 0 1 496,128 L496,384 A112,112 0 0 1 384,496 L128,496 A112,112 0 0 1 16,384 L16,128 A112,112 0 0 1 128,16 Z"
+        android:strokeColor="#FF3B1F"
+        android:strokeWidth="10" />
+
+    <!-- Flame accent -->
+    <path
+        android:fillColor="#FF8A00"
+        android:pathData="M256,84 C286,122 300,146 286,172 C278,188 262,194 256,194 C250,194 234,188 226,172 C212,146 226,122 256,84 Z" />
+
+    <!-- Stylised "H" -->
+    <path
+        android:fillColor="#FF4A17"
+        android:pathData="M148,206 h56 v106 h104 V206 h56 v194 h-56 V362 H204 v38 h-56 Z" />
+
+    <!-- Base bar -->
+    <path
+        android:fillColor="#FF8A00"
+        android:pathData="M159,424 h194 a11,11 0 0 1 11,11 a11,11 0 0 1 -11,11 h-194 a11,11 0 0 1 -11,-11 a11,11 0 0 1 11,-11 Z" />
+</vector>

@@ -1,10 +1,40 @@
-name: Test Workflow
+name: Build native binary
 
 on:
-  workflow_dispatch: {}
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
-  test:
+  build-native:
+    name: Build Linux binary
     runs-on: ubuntu-latest
+
     steps:
-      - run: echo "Hello from GitHub Actions"
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake g++ make libgl1-mesa-dev libglx-dev
+
+      - name: Configure CMake
+        run: cmake -B build -S . -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_BUILD_TYPE=Release
+
+      - name: Compile
+        run: cmake --build build --target hellms -j4
+
+      - name: Run binary
+        run: ./build/hellms
+
+      - name: Upload binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: hellms-binary
+          path: build/hellms
+          if-no-files-found: error
