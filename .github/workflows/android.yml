@@ -17,31 +17,21 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v5
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
-        with:
-          cmdline-tools-version: 'latest'
-          packages: platform-tools
-
-      - name: Accept Android licenses
-        run: |
-          mkdir -p $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/ 2>/dev/null || true
-          echo "y" | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses 2>/dev/null || true
-
       - name: Install cmake
         run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake g++
           cmake --version
 
-      - name: Configure CMake for Android
+      - name: Configure CMake
         run: |
           cmake -B build -S .
+          echo "CMake configure complete"
+
+      - name: Build
+        run: |
           cmake --build build --target hellms -j4
+          echo "Build complete"
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
