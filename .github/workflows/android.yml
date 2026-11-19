@@ -14,8 +14,8 @@ jobs:
       - name: Install Java and Android SDK
         run: |
           sudo apt-get update
-          sudo apt-get install -y openjdk-17-jdk-headless unzip
-          wget -q https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip -O /tmp/sdk-tools.zip
+          sudo apt-get install -y openjdk-17-jdk-headless unzip curl
+          curl -sSL https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip -o /tmp/sdk-tools.zip
           mkdir -p /opt/android-sdk/cmdline-tools
           unzip -q /tmp/sdk-tools.zip -d /opt/android-sdk/cmdline-tools
           mv /opt/android-sdk/cmdline-tools/cmdline-tools /opt/android-sdk/cmdline-tools/latest
@@ -38,7 +38,8 @@ jobs:
 
       - name: Install Gradle 8.0.2
         run: |
-          wget -q https://services.gradle.org/distributions/gradle-8.0.2-bin.zip -o /tmp/gradle.zip
+          curl -sSL https://services.gradle.org/distributions/gradle-8.0.2-bin.zip -o /tmp/gradle.zip
+          ls -la /tmp/gradle.zip
           unzip -q /tmp/gradle.zip -d /opt
           echo 'export PATH=/opt/gradle-8.0.2/bin:$PATH' >> $GITHUB_ENV
           gradle --version
