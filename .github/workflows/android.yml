@@ -1,4 +1,4 @@
-name: Build HELLMS Android APK
+name: Build HELLMS Android CMake
 
 on:
   push:
@@ -8,8 +8,8 @@ on:
   workflow_dispatch: {}
 
 jobs:
-  build-apk:
-    name: Build Android APK
+  build:
+    name: CMake Android Build
     runs-on: ubuntu-latest
     timeout-minutes: 60
 
@@ -17,7 +17,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
+      - name: Set up CMake
+        uses: actions/cmake-action@v2
+
+      - name: Set up JDK 17 (for Android tools)
         uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
@@ -31,30 +34,21 @@ jobs:
 
       - name: Accept Android licenses
         run: |
-          # Accept licenses silently
           mkdir -p $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/ 2>/dev/null || true
           echo "y" | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses 2>/dev/null || true
 
-      - name: Make gradlew executable
-        run: chmod +x gradlew
-
-      - name: Cache Gradle
-        uses: actions/cache@v3
+      - name: Install NDK
+        uses: actions/setup-android-ndk@v2
         with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: gradle-${{ runner.os }}-${{ hashFiles('gradlew') }}
-          restore-keys: |
-            gradle-${{ runner.os }}-
+          api-level: 33
 
-      - name: Build with Gradle (with explicit path)
+      - name: Configure CMake for Android
         run: |
-          chmod +x ./gradlew
-          ./gradlew assembleDebug --no-daemon --rerun-tasks
+          cmake -B build -S .
+          cmake --build build --target hellms -j4
 
-      - name: Upload APK artifact
+      - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: hellms-apk
-          path: app/build/outputs/apk/debug/app-debug.apk
+          name: hellms-binary
+          path: /HELLMS/build/hellms
